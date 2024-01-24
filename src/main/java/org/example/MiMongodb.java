@@ -27,6 +27,7 @@ public class MiMongodb {
 
         miMongodb.borrar("Julia");
 
+        //https://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
         //https://www.baeldung.com/java-mongodb-filters3
     }
     public MiMongodb(){
