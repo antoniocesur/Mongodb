@@ -1,10 +1,10 @@
 package org.example;
 
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 public class MiMongodb {
@@ -17,18 +17,13 @@ public class MiMongodb {
         MiMongodb miMongodb=new MiMongodb();
 
         miMongodb.guardar("María", "Microsoft");
+        miMongodb.guardar2("Benigna", "Cisco");
         miMongodb.modificar("María", "Julia");
 
-        /*Document query = new Document();
-        query.put("name", "Shubham");
+        miMongodb.modificarCompany("Cisco", "Cisco inc");
 
-        Document newDocument = new Document();
-        newDocument.put("name", "John");
-
-        Document updateObject = new Document();
-        updateObject.put("$set", newDocument);
-
-        collection.updateOne(query, updateObject);*/
+        miMongodb.listarTodos();
+        miMongodb.encontrarCompany("Microsoft");
 
     }
     public MiMongodb(){
@@ -46,6 +41,12 @@ public class MiMongodb {
         collection.insertOne(document);
     }
 
+    public void guardar2(String nombre, String company){
+        Document doc = new Document("name", nombre)
+                .append("company", company);
+        collection.insertOne(doc);
+    }
+
     public void modificar(String nombreBuscar, String nombreGuardar){
         Document query = new Document();
         query.put("name", nombreBuscar);
@@ -59,5 +60,44 @@ public class MiMongodb {
         collection.updateOne(query, updateObject);
     }
 
+    public void modificarCompany(String companyBuscar, String companyGuardar){
+        //Cambia solo uno
+        collection.updateOne(Filters.eq("company", companyBuscar), new Document("$set", new Document("company", companyGuardar)));
+
+        //Cambiarlos todos e indicar cuántos han cambiado
+        UpdateResult updateResult = collection.updateMany(Filters.eq("company", companyBuscar), new Document("$set", new Document("company", companyGuardar)));
+        System.out.println(updateResult.getModifiedCount());
+    }
+
+    public void listarTodos(){
+        MongoCursor<Document> cursor = collection.find().iterator();
+
+        while (cursor.hasNext()) {
+            System.out.println(cursor.next().toJson());
+        }
+    }
+
+    public void encontrarCompany(String company){
+        //Encontrar el primero
+        System.out.println("El primero de esa compañia");
+        Document doc = collection.find(Filters.eq("company", company)).first();
+        System.out.println(doc.toJson());
+
+        //Mostrarlos todos
+        System.out.println("Muestro todos los de una compañía");
+        MongoCursor<Document> cursor= collection.find(Filters.eq("company", company)).iterator();
+        while(cursor.hasNext()){
+            System.out.println(cursor.next().toString());
+        }
+    }
+
+    public void borrar(String nombre){
+        //Borrar 1
+        collection.deleteOne(Filters.eq("nombre", nombre));
+
+        //Borrar todos
+        DeleteResult deleteResult = collection.deleteMany(Filters.gte("i", 100));
+        System.out.println(deleteResult.getDeletedCount());
+    }
 
 }
