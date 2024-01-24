@@ -25,6 +25,9 @@ public class MiMongodb {
         miMongodb.listarTodos();
         miMongodb.encontrarCompany("Microsoft");
 
+        miMongodb.borrar("Julia");
+
+        //https://www.baeldung.com/java-mongodb-filters3
     }
     public MiMongodb(){
         mongoClient = MongoClients.create("mongodb://localhost:27017");
@@ -83,7 +86,7 @@ public class MiMongodb {
         Document doc = collection.find(Filters.eq("company", company)).first();
         System.out.println(doc.toJson());
 
-        //Mostrarlos todos
+        //Mostrarlos todos los de esa companía
         System.out.println("Muestro todos los de una compañía");
         MongoCursor<Document> cursor= collection.find(Filters.eq("company", company)).iterator();
         while(cursor.hasNext()){
@@ -93,10 +96,10 @@ public class MiMongodb {
 
     public void borrar(String nombre){
         //Borrar 1
-        collection.deleteOne(Filters.eq("nombre", nombre));
+        collection.deleteOne(Filters.eq("name", nombre));
 
         //Borrar todos
-        DeleteResult deleteResult = collection.deleteMany(Filters.gte("i", 100));
+        DeleteResult deleteResult = collection.deleteMany(Filters.gte("name", nombre));
         System.out.println(deleteResult.getDeletedCount());
     }
 
