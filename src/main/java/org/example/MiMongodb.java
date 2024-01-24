@@ -16,30 +16,41 @@ public class MiMongodb {
 
         MiMongodb miMongodb=new MiMongodb();
 
-        miMongodb.guardar("María", "Microsoft");
-        miMongodb.guardar2("Benigna", "Cisco");
+        /*miMongodb.guardar("María", "Microsoft");
+        miMongodb.guardar2("Benigna", "Cisco");*/
+
         miMongodb.modificar("María", "Julia");
 
         miMongodb.modificarCompany("Cisco", "Cisco inc");
 
-        miMongodb.listarTodos();
+
+        //miMongodb.listarTodos();
         miMongodb.encontrarCompany("Microsoft");
 
-        miMongodb.borrar("Julia");
+        //miMongodb.borrar("Julia");
 
         //https://mongodb.github.io/mongo-java-driver/3.4/driver/getting-started/quick-start/
         //https://www.baeldung.com/java-mongodb-filters3
     }
+    //Constructor de la clase
     public MiMongodb(){
+        //Se conecta a nuestro servidor local
         mongoClient = MongoClients.create("mongodb://localhost:27017");
+        //Se conecta a la base de datos myMongoDb
         MongoDatabase database = mongoClient.getDatabase("myMongoDb");
+
+        //Muestra un listado por consola de todas las bases de datos disponibles
         mongoClient.listDatabaseNames().forEach(System.out::println);
+
+        //Crea una colección ("tabla") llamada customers
         database.createCollection("customers");
         database.listCollectionNames().forEach(System.out::println);
         collection = database.getCollection("customers");
     }
     public void guardar(String nombre, String company){
+        //Creo un documento ("registro" o "fila" en relacionales)
         Document document = new Document();
+        //Añado una propiedad llamada "name" con el valor nombre
         document.put("name", nombre);
         document.put("company", company);
         collection.insertOne(document);
@@ -52,15 +63,19 @@ public class MiMongodb {
     }
 
     public void modificar(String nombreBuscar, String nombreGuardar){
+        //Documento para buscar y realizar la consulta
         Document query = new Document();
         query.put("name", nombreBuscar);
 
+        //Documento con el nuevo valor para los campos
         Document newDocument = new Document();
         newDocument.put("name", nombreGuardar);
 
+        //Documento con el "comando" para modificar y el anterior con los nuevos valores
         Document updateObject = new Document();
         updateObject.put("$set", newDocument);
 
+        //Realizamos la actualización
         collection.updateOne(query, updateObject);
     }
 
